@@ -36,6 +36,8 @@ export default function ApprovalList() {
   const [newEventIds, setNewEventIds] = useState<Set<string>>(new Set());
   const prevEventIdsRef = useRef<Set<string>>(new Set());
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isFiltersPinned, setIsFiltersPinned] = useState(false);
+  const [isFiltersHovered, setIsFiltersHovered] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     chain: "all",
     token: "all",
@@ -205,14 +207,45 @@ export default function ApprovalList() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl">
-        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filters
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden transition-all duration-300"
+        onMouseEnter={() => setIsFiltersHovered(true)}
+        onMouseLeave={() => setIsFiltersHovered(false)}
+      >
+        <div className="p-6 pb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filters
+            </h2>
+            <button
+              onClick={() => setIsFiltersPinned(!isFiltersPinned)}
+              className={`p-2 rounded-lg transition-colors ${
+                isFiltersPinned
+                  ? "bg-orange-500/20 text-orange-400"
+                  : "bg-gray-700/50 text-gray-400 hover:bg-gray-700"
+              }`}
+              title={isFiltersPinned ? "Unpin filters" : "Pin filters"}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div
+          className={`transition-all duration-300 ease-in-out ${
+            isFiltersPinned || isFiltersHovered
+              ? "max-h-96 opacity-100"
+              : "max-h-0 opacity-0"
+          }`}
+          style={{ overflow: isFiltersPinned || isFiltersHovered ? "visible" : "hidden" }}
+        >
+          <div className="px-6 pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Chain</label>
             <select
@@ -279,6 +312,8 @@ export default function ApprovalList() {
               />
               Include ∞
             </label>
+          </div>
+            </div>
           </div>
         </div>
       </div>
